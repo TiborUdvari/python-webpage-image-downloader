@@ -15,12 +15,21 @@ def get_domain(url):
 
 
 def download_image(img_url, local_path='downloads'):
-    if not os.path.exists(local_path):
-        os.makedirs(local_path)
-    img = urllib2.urlopen(img_url)
-    img_name = img_url.split('/')[-1]
-    with open(local_path + '/' + img_name, 'wb') as localFile:
-        localFile.write(img.read())
+    try:
+        if not os.path.exists(local_path):
+            os.makedirs(local_path)
+
+        if len(urlparse.urlparse(img_url).scheme) < 3:
+            img_url = "http:" + img_url
+
+        img = urllib2.urlopen(img_url)
+        img_name = img_url.split('/')[-1]
+        with open(local_path + '/' + img_name, 'wb') as localFile:
+            localFile.write(img.read())
+    except Exception as e:
+        print "Failed to download " + img_url + " because of " + str(e)
+        print "the scheme is " + urlparse.urlparse(img_url).scheme
+        pass
 
 
 class ImageParser(HTMLParser):
